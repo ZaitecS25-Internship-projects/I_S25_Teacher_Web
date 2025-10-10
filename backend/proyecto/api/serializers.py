@@ -8,7 +8,3 @@ class UsuarioPersonalizadoSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'contraseña': {'write_only': True}  # (Para que la contraseña no se devuelva en las respuestas)
         }
-class LoginSerializer(serializers.Serializer):
-  
-    username = serializers.CharField(required=True)
-    password = serializers.CharField(required=True, write_only=True)
