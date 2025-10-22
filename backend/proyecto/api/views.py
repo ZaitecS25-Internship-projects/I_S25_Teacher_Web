@@ -96,7 +96,6 @@ class UsuarioPersonalizadoViewSet(viewsets.ModelViewSet):
         user.save()
         return Response({"ok": True})
 
-
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def register_user(request):

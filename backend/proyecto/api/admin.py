@@ -8,6 +8,6 @@ class UsuarioAdmin(admin.ModelAdmin):
     search_fields = ("username", "email")
     fieldsets = (
         (None, {"fields": ("username", "password")}),
-        ("Info", {"fields": ("first_name", "last_name", "email", "role")}),
+        ("Info", {"fields": ("full_name", "email", "role")}),
         ("Permisos", {"fields": ("is_active","is_staff","is_superuser","groups","user_permissions")}),
     )

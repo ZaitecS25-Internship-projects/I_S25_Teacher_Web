@@ -11,15 +11,17 @@ function AppContent() {
     }, [setUsuario])
 
     return (
-        <main className='w-screen h-screen flex justify-center flex-col items-center overflow-hidden
-        bg-gradient-to-t from-gray-400 to-black'>
+        <main className='h-screen w-auto flex justify-center flex-col items-center
+        bg-gradient-to-t from-gray-400 to-black box-border'>
             {
                 usuario.full_name === "" || usuario.full_name === undefined || usuario.full_name === null ? (
-                    <Auth funcUsuario={funcUsuario} />
+                    <div className='w-screen h-screen overflow-hidden flex justify-center flex-col items-center'>
+                        <Auth funcUsuario={funcUsuario} />
+                    </div>
                 ) : (
-                    <>
+                    <div className='h-full w-full'>
                         <Dashboard />
-                    </>
+                    </div>
                 )
             }
         </main>

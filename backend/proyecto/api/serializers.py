@@ -32,7 +32,6 @@ class LoginSerializer(serializers.Serializer):
         attrs["user"] = user
         return attrs
 
-
 class UserPublicSerializer(serializers.ModelSerializer):
     class Meta:
         model = UsuarioPersonalizado
