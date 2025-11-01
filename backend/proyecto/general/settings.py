@@ -1,12 +1,28 @@
 import os
-from pathlib import Path
 from dotenv import load_dotenv
+from pathlib import Path
 
+# --- Rutas base ---
+BASE_DIR = Path(__file__).resolve().parent.parent  # .../backend/proyecto
 
-load_dotenv()
+# 2) Cargar .env de forma robusta
+try:
+    from dotenv import load_dotenv, find_dotenv
+    # intenta el .env en BASE_DIR primero
+    env_path = BASE_DIR / ".env"
+    if env_path.exists():
+        load_dotenv(env_path)
+    else:
+        # búsqueda ascendente por si cambia el cwd
+        load_dotenv(find_dotenv(filename=".env", usecwd=True))
+except Exception as e:
+    print("DOTENV WARNING:", e)
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-load_dotenv(BASE_DIR / ".env")
+# 3) Debug temporal
+#print("ENV DEBUG -> BASE_DIR:", BASE_DIR)
+#print("ENV DEBUG -> .env exists:", (BASE_DIR / ".env").exists())
+#print("ENV DEBUG -> DB_NAME:", os.getenv("DB_NAME"))
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,15 +43,18 @@ from datetime import timedelta
 # Application definition
 
 INSTALLED_APPS = [
-    'corsheaders',
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'rest_framework',
-    'api',
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "rest_framework",
+    "rest_framework_simplejwt",
+    "rest_framework_simplejwt.token_blacklist",
+    "corsheaders",
+    "api",
+    "cursos",
 ]
 
 MIDDLEWARE = [
@@ -74,18 +93,12 @@ ASGI_APPLICATION = 'general.asgi.application'
 
 DATABASES = {
     "default": {
-        # ACTUALMENTE HAY PROBLEMAS COMO EL SERVER SE CONECTA A LA BD, PETA CON EL .ENV REVISAR!
         "ENGINE": "django.db.backends.postgresql",
-        # "NAME": os.environ.get("POSTGRES_DB", "semana3"),
-        # "USER": os.environ.get("POSTGRES_USER", "postgres"),
-        # "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "1234"),
-        # "HOST": os.environ.get("POSTGRES_HOST", "localhost"),
-        # "PORT": os.environ.get("POSTGRES_PORT", "5432"),
-            "NAME": "semana3",
-            "USER": "danos",
-            "PASSWORD": "1601",
-            "HOST": "localhost",
-            "PORT": "5432"
+        "NAME": os.getenv("POSTGRES_DB", "semana3_utf8"),
+        "USER": os.getenv("POSTGRES_USER", "postgres"),
+        "PASSWORD": os.getenv("POSTGRES_PASSWORD", "1601"),
+        "HOST": os.getenv("POSTGRES_HOST", "127.0.0.1"),
+        "PORT": os.getenv("POSTGRES_PORT", "5432"),
     }
 }
 
@@ -95,7 +108,7 @@ AUTH_USER_MODEL = "api.UsuarioPersonalizado"
 # --- DRF / JWT ---
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "api.authentication.CookieJWTAuthentication", 
+        "authentication.CookieJWTAuthentication",        
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": (
@@ -104,7 +117,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     "AUTH_HEADER_TYPES": ("Bearer",),
     "AUTH_COOKIE": "jwt",          # nombre de la cookie
@@ -150,16 +163,14 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 CORS_ALLOW_CREDENTIALS = True
+
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
 ]
 
-CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-]
+CORS_ALLOWED_ORIGINS = ["http://localhost:5173"]
+CORS_ALLOW_CREDENTIALS = True
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "http://localhost:5173/"]
-
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# --- Otros ---
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
