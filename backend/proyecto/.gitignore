@@ -1,0 +1,10 @@
+# === PYTHON ===
+__pycache__/
+*.pyc
+*.log
+*.pot
+*.pyc
+*.pyo
+*.pyd
+.env
+.env.*
