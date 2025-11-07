@@ -1,7 +1,7 @@
 import { useContext, useEffect, useMemo, useState } from "react"
 import { UsuarioContext } from "../useContext/UsuarioContext"
 import { Link } from "react-router-dom"
-import { apiFetch } from "../Profesor/api"
+import { apiFetch, getTutorias } from "../Profesor/api"
 import CalendarioTareas from "./CalendarioTareas"
 
 const Inicio = () => {
@@ -17,6 +17,7 @@ const Inicio = () => {
   // Datos para profesor/admin
   const [misCursosImpartidos, setMisCursosImpartidos] = useState([])
   const [misTareas, setMisTareas] = useState([])
+  const [tutoriasAgenda, setTutoriasAgenda] = useState([])
 
   useEffect(() => {
     let alive = true
@@ -55,6 +56,9 @@ const Inicio = () => {
           setMisCursosImpartidos(listCursos)
           setMisTareas(listTareas)
         }
+        const tutorias = await getTutorias().catch(() => [])
+        if (!alive) return
+        setTutoriasAgenda(Array.isArray(tutorias) ? tutorias : [])
       } catch (e) {
         if (alive) setErr("No se pudo cargar el resumen")
       } finally {
@@ -104,8 +108,6 @@ const Inicio = () => {
             <Link to="/asignaturas" className="text-blue-400 hover:underline mt-2 inline-block">
               Ver asignaturas
             </Link>
-            {/* Calendario de tareas debajo del resumen */}
-            <CalendarioTareas tareas={tareas} cursos={cursos} />
           </div>
           <div className="p-4 rounded-lg bg-gray-800 text-white md:col-span-2">
             <div className="flex items-center justify-between mb-2">
@@ -170,6 +172,15 @@ const Inicio = () => {
               </li>
             </ul>
           </div>
+        </div>
+      )}
+      {!loading && (
+        <div className="mt-6">
+          <CalendarioTareas
+            tareas={usuario?.role === "S" ? tareas : misTareas}
+            cursos={usuario?.role === "S" ? cursos : misCursosImpartidos}
+            tutorias={tutoriasAgenda}
+          />
         </div>
       )}
     </section>

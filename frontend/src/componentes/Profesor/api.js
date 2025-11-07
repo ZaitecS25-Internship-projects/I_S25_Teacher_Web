@@ -1,8 +1,13 @@
-const API = import.meta.env.VITE_API_URL || "http://localhost:8000";
+const RAW_API = (import.meta.env.VITE_API_URL || "http://localhost:8000").trim();
+const API_BASE = RAW_API.replace(/\/+$/, "").replace(/\/api$/, "");
+
+const buildUrl = (path = "") => {
+  const cleanPath = path.startsWith("/") ? path : `/${path}`;
+  return `${API_BASE}/api${cleanPath}`;
+};
+
 export async function apiFetch(path, opts = {}) {
-  const raw  = import.meta.env.VITE_API_URL || "";
-  const base = raw.replace(/\/+$/, "").replace(/\/api$/, "");
-  const url  = `${base}/api${path.startsWith("/") ? path : `/${path}`}`;
+  const url = buildUrl(path);
 
   // Normaliza headers
   const headers = { Accept: "application/json", ...(opts.headers || {}) };
@@ -49,8 +54,7 @@ export async function apiFetch(path, opts = {}) {
 }
 
 export async function getResumenAlumnos() {
-  const base = (import.meta.env.VITE_API_URL || "").replace(/\/api$/, "");
-  const url  = `${base}/api/profesor/cursos/resumen-alumnos/`;
+  const url = buildUrl("/profesor/cursos/resumen-alumnos/");
 
   const res = await fetch(url, {
     method: 'GET',
@@ -66,9 +70,7 @@ export async function getResumenAlumnos() {
 }
 
 export async function deleteTarea(id) {
-  const raw  = import.meta.env.VITE_API_URL || "";
-  const base = raw.replace(/\/+$/, "").replace(/\/api$/, "");
-  const url  = `${base}/api/profesor/tareas/${id}/`;
+  const url = buildUrl(`/profesor/tareas/${id}/`);
 
   const res = await fetch(url, {
     method: "DELETE",
@@ -83,4 +85,15 @@ export async function deleteTarea(id) {
   }
   return true;
 }
+
+export const getTutorias = () => apiFetch("/profesor/tutorias/");
+
+export const createTutoria = (payload) =>
+  apiFetch("/profesor/tutorias/", {
+    method: "POST",
+    body: payload,
+  });
+
+export const getAlumnosCurso = (cursoId) =>
+  apiFetch(`/profesor/cursos/${cursoId}/alumnos/`);
 
