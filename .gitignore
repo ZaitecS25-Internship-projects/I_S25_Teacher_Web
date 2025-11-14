@@ -1,0 +1,20 @@
+# Node / frontend
+node_modules/
+dist/
+build/
+*.log
+
+# Python / backend
+__pycache__/
+*.pyc
+env/
+venv/
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+*.bak
+*.swp
+
+# VS Code
+.vscode/
