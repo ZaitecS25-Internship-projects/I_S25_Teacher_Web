@@ -5,6 +5,7 @@ import { UsuarioContext } from './UsuarioContext';
 import Dashboard from '../Dashboard/Dashboard';
 import PrivateRoute from '../Authorization/PrivateRoute';
 import ProfileCard from '../Dashboard/ProfileCard';
+import Perfil from '../Dashboard/Perfil';
 import Asignaturas from '../Dashboard/Asignaturas';
 import AsignaturaDetalle from '../Dashboard/AsignaturaDetalle';
 import Tutorias from '../Tutorias/Tutorias';
@@ -16,6 +17,7 @@ import CursosPage from '../Profesor/CursosPage';
 import CursoDetallePage from '../Profesor/CursoDetallePage';
 import TareasPage from '../Profesor/TareasPage';
 import CalificacionesPage from '../Profesor/CalificacionesPage';
+import MensajeriaPage from '../Mensajeria/MensajeriaPage';
 
 // --- Estudiante ---
 import LayoutEstudiante from '../Estudiante/LayoutEstudiante';
@@ -31,9 +33,10 @@ function AppContent() {
       <Routes>
         <Route element={<PrivateRoute />}>
           <Route path='/' element={<Dashboard />}>
-            <Route path='perfil' element={<ProfileCard />} />
+            <Route path='perfil' element={<Perfil />} />
             <Route path='asignaturas' element={<Asignaturas />} />
             <Route path='asignaturas/:id' element={<AsignaturaDetalle />} />
+            <Route path='mensajes' element={<MensajeriaPage />} />
             <Route path='tutorias' element={<Tutorias />} />
             <Route
               path="profesor"
