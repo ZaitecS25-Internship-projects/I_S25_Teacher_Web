@@ -1,92 +1,125 @@
-import { useContext, useState, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { UsuarioContext } from "../useContext/UsuarioContext";
+import { apiFetch } from "../Profesor/api"; 
 
 const Perfil = () => {
-  const { usuario } = useContext(UsuarioContext);
-  const [info, setInfo] = useState({});
-  const [menuOpen, setMenuOpen] = useState(false); // estado para mostrar/ocultar menú
+const { usuario, logout } = useContext(UsuarioContext);
+const [menuOpen, setMenuOpen] = useState(false);
+const [info, setInfo] = useState(null);
+const [loading, setLoading] = useState(true);
+const [error, setError] = useState("");
 
-  useEffect(() => {
-    // Datos simulados según rol
-    if (usuario?.role === "S") {
-      setInfo({
-        nombre: usuario.first_name + " " + usuario.last_name,
-        email: usuario.email,
-        rol: "Estudiante",
-        cursos: ["Matemáticas", "Física", "Programación"],
-        promedio: 8.5,
-        asistencia: "92%",
-        intereses: ["Robótica", "Videojuegos", "Cómics"]
-      });
-    } else if (usuario?.role === "T") {
-      setInfo({
-        nombre: usuario.first_name + " " + usuario.last_name,
-        email: usuario.email,
-        rol: "Profesor",
-        asignaturas: ["Matemáticas", "Programación"],
-        horario: "Lunes a Viernes 10:00-14:00",
-        oficina: "Edificio B, Aula 203",
-        contacto: "profesor@example.com"
-      });
+useEffect(() => {
+if (!usuario) return;
+setLoading(true);
+setError("");
+
+```
+(async () => {
+  try {
+    let data = {};
+    if (usuario.role === "S") {
+      // Cursos y tutorías del estudiante
+      const cursos = await apiFetch(`/estudiante/${usuario.id}/cursos`);
+      const tutorias = await apiFetch(`/estudiante/${usuario.id}/tutorias`);
+      data = { cursos, proximasTutorias: tutorias.slice(0,5) };
+    } else if (usuario.role === "T") {
+      // Asignaturas y tutorías del profesor
+      const asignaturas = await apiFetch(`/profesor/${usuario.id}/asignaturas`);
+      const tutorias = await apiFetch(`/profesor/${usuario.id}/tutorias`);
+      data = { asignaturas, tutoriasRealizadas: tutorias.length };
     }
-  }, [usuario]);
+    setInfo(data);
+  } catch (err) {
+    setError(err.message || "No se pudo cargar la información");
+  } finally {
+    setLoading(false);
+  }
+})();
+```
 
-  if (!usuario?.role) return <p className="text-white">Cargando perfil...</p>;
+}, [usuario]);
 
-  return (
-    <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow w-full max-w-4xl mx-auto relative">
-      {/* Título y botón de opciones */}
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-          Perfil {info.rol}
-        </h2>
-        <div className="relative">
-          <button
-            onClick={() => setMenuOpen(!menuOpen)}
-            className="bg-gray-200 dark:bg-gray-700 px-4 py-2 rounded shadow hover:bg-gray-300 dark:hover:bg-gray-600"
+if (!usuario || loading)
+return <p className="text-white text-center mt-10">Cargando perfil...</p>;
+
+const nombreCompleto = `${usuario.first_name || ""} ${usuario.last_name || ""}`.trim();
+
+return ( <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow w-full max-w-4xl mx-auto relative">
+
+```
+  {/* Header */}
+  <div className="flex justify-between items-center mb-4">
+    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Perfil</h2>
+    <div className="relative">
+      <button
+        onClick={() => setMenuOpen(!menuOpen)}
+        className="bg-gray-200 dark:bg-gray-700 px-4 py-2 rounded shadow hover:bg-gray-300 dark:hover:bg-gray-600"
+      >
+        Opciones ▾
+      </button>
+
+      {menuOpen && (
+        <ul className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 border rounded shadow z-10 text-sm text-gray-900 dark:text-gray-100">
+          <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer">
+            Editar perfil
+          </li>
+          <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer">
+            Cambiar foto
+          </li>
+          <li
+            onClick={() => logout && logout()}
+            className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer"
           >
-            Opciones ▾
-          </button>
-          {menuOpen && (
-            <ul className="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-700 border rounded shadow z-10">
-              <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer">
-                Editar perfil
-              </li>
-              <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer">
-                Cambiar foto
-              </li>
-              <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer">
-                Cerrar sesión
-              </li>
-            </ul>
-          )}
-        </div>
-      </div>
-
-      {/* Información del usuario */}
-      <p><strong>Nombre:</strong> {info.nombre}</p>
-      <p><strong>Email:</strong> {info.email}</p>
-      <p><strong>Rol:</strong> {info.rol}</p>
-
-      {usuario?.role === "S" && (
-        <>
-          <p><strong>Cursos inscritos:</strong> {info.cursos?.join(", ")}</p>
-          <p><strong>Promedio:</strong> {info.promedio}</p>
-          <p><strong>Asistencia:</strong> {info.asistencia}</p>
-          <p><strong>Intereses:</strong> {info.intereses?.join(", ")}</p>
-        </>
-      )}
-
-      {usuario?.role === "T" && (
-        <>
-          <p><strong>Asignaturas que enseña:</strong> {info.asignaturas?.join(", ")}</p>
-          <p><strong>Horario disponible:</strong> {info.horario}</p>
-          <p><strong>Oficina:</strong> {info.oficina}</p>
-          <p><strong>Contacto:</strong> {info.contacto}</p>
-        </>
+            Cerrar sesión
+          </li>
+        </ul>
       )}
     </div>
-  );
+  </div>
+
+  <p><strong>Nombre:</strong> {nombreCompleto}</p>
+  <p><strong>Email:</strong> {usuario.email}</p>
+  <p><strong>Rol:</strong> {usuario.role === "S" ? "Estudiante" : "Profesor"}</p>
+
+  {/* Error */}
+  {error && <p className="text-red-500 mt-2">{error}</p>}
+
+  {usuario.role === "S" && (
+    <div className="mt-4 p-4 rounded-lg bg-gray-900/20 border border-gray-700">
+      <p className="font-semibold mb-2">Cursos inscritos:</p>
+      <ul className="list-disc list-inside">
+        {info.cursos?.map((c, i) => <li key={i}>{c.nombre || c}</li>)}
+      </ul>
+      <p className="font-semibold mt-2">Próximas tutorías:</p>
+      <ul className="list-disc list-inside">
+        {info.proximasTutorias?.length
+          ? info.proximasTutorias.map(t => (
+              <li key={t.id}>
+                {t.asignatura} - {new Date(t.fecha).toLocaleString()}
+              </li>
+            ))
+          : <li>No hay tutorías próximas</li>}
+      </ul>
+    </div>
+  )}
+
+  {usuario.role === "T" && (
+    <div className="mt-4 p-4 rounded-lg bg-gray-900/20 border border-gray-700">
+      <p className="font-semibold mb-2">Asignaturas:</p>
+      <ul className="list-disc list-inside">
+        {info.asignaturas?.map((a, i) => <li key={i}>{a.nombre || a}</li>)}
+      </ul>
+      <p className="font-semibold mt-2">
+        Tutorías realizadas: {info.tutoriasRealizadas || 0}
+      </p>
+    </div>
+  )}
+
+</div>
+```
+
+);
 };
 
 export default Perfil;
