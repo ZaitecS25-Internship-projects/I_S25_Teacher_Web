@@ -1,6 +1,6 @@
-import { useContext, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { UsuarioContext } from "../useContext/UsuarioContext"
-import { Outlet, useLocation } from "react-router-dom"
+import { Outlet, useLocation, useNavigate } from "react-router-dom"
 import { Logout } from "../Authorization/scripts/Security"
 import arrow from '../../assets/btn-arrow.svg'
 import exit from '../../assets/exit.svg'
@@ -11,9 +11,17 @@ import Inicio from "./Inicio"
 const Dashboard = () => {
     const { setUsuario } = useContext(UsuarioContext)
     const [showNB, setShowNB] = useState(false)
+    const [contador, setContador ] = useState(0)
     const location = useLocation();
 
+    const navigate = useNavigate();
 
+    useEffect(()=>{
+        if(contador === 5){
+            navigate("/admin")
+            setContador(0)
+        }
+    },[contador, navigate])
 
     return (
         <main className="flex relative h-full min-h-screen min-w-screen w-full bg-gray-50 dark:bg-gray-900">
@@ -29,7 +37,7 @@ const Dashboard = () => {
             </div>
             <section className="flex flex-col w-full h-auto p-4 z-0">
                 <article className="relative top-0 w-full h-2/12">
-                    <h3 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">
+                    <h3 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white" onClick={()=>setContador(prev=>prev+1)}>
                         Tablero
                     </h3>
                     <button onClick={() => (Logout(), setUsuario(() => null))} className='bg-white w-12 h-12 hover:bg-gray-400 text-lg rounded-2xl p-2 ml-2 absolute top-0 right-0'>
@@ -39,7 +47,7 @@ const Dashboard = () => {
                 <article className="flex-1 p-6">
                     <>
                         {location.pathname == '/' && <Inicio />}
-                        <Outlet />
+                        <Outlet contador={contador}/>
                     </>
                 </article>
             </section>

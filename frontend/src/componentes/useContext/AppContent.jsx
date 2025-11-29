@@ -27,19 +27,25 @@ import CursoDetallePageEstudiante from '../Estudiante/CursoDetallePageEstudiante
 import TareasEstudiante from '../Estudiante/TareasEstudiante';
 import CalificacionesEstudiante from '../Estudiante/Calificaciones/CalificacionesEstudiante';
 
+// --- Admin ---
+import AdminTemplate from '../Admin/AdminTemplate';
+
 function AppContent() {
   const { usuario } = useContext(UsuarioContext)
   return (
     <>
       <Routes>
         <Route element={<PrivateRoute />}>
+          {/* tablero central del prouecto */}
           <Route path='/' element={<Dashboard />}>
+            <Route path='admin' element={<AdminTemplate />} />
             <Route path='perfil' element={<Perfil />} />
             <Route path='asignaturas' element={<Asignaturas />} />
             <Route path='asignaturas/:id' element={<AsignaturaDetalle />} />
             <Route path='mensajes' element={<MensajeriaPage />} />
             {/* AQUI PUEDES ENCONTRAR LA LOGICA QUE APLICA LA RUTA DE TUTORIAS SEGUN EL ROL */}
             <Route path='tutorias' element={<TutoriasEsqueleto />} />
+            {/* ruta para mostrar el componente profesor */}
             <Route
               path="profesor"
               element={

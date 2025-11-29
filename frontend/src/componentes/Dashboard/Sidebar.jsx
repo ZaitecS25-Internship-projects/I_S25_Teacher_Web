@@ -45,8 +45,9 @@ const Sidebar = () => {
           usuario?.role === "S" ? (   
         <button onClick={()=>ir('/estudiante')}className="flex-1 bg-slate-900 flex items-center justify-center flex-col p-1 gap-1 hover:bg-sky-950 rounded-2xl">
           <img src={cursos} className="mdh:w-6/12 mdh:h-6/12 w-[45px] h-[45px]" />
-          <p className="w-12/12 h-6/12 mdh:w-fit mdh:h-fit">Panel Estudiante</p>
+          <p className="w-12/12 h-6/12 mdh:w-fit mdh:h-fit text-lg">Panel Estudiante</p>
         </button>
+
           ) : (
             // aqui se podra colocar la ruta para un componente admin dentro de la app
             <p>Panel Admin</p>
